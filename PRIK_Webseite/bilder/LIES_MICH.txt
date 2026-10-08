@@ -1,0 +1,2 @@
+In diesen Ordner kommen alle Fotos der Seite (Dateinamen ohne Leerzeichen und Umlaute, z. B. k1-handpuppe.jpg).
+Diese Datei darf gelöscht werden, sobald das erste Foto drin ist.

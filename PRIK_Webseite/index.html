@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="default">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StaFF Materialkisten — Kindergarten (PRiK)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@600;700;800&family=Karla:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper: #F7E7A8;
+    --paper-2: #F2DD8E;
+    --ink: #2B2A28;
+    --ink-soft: #5C5850;
+    --line: #DCD3BE;
+    --radius: 14px;
+    --shadow: 0 2px 0 rgba(43,42,40,0.06), 0 8px 20px -12px rgba(43,42,40,0.25);
+    /* Startfarben = gleiche Familie wie PRiGS/PRiS (Gold/Navy-Violett) */
+    --accent: #F0B429;
+    --accent-deep: #332F63;
+    --accent-tint: #FBF3DE;
+    --card-bg: #EDBE55;
+  }
+  html[data-theme="PRiK"]{ --accent:#E2762E; --accent-deep:#2B4A66; --accent-tint:#FCECDF; --card-bg:#E2A467; }
+  html[data-theme="PRiGS"]{ --accent:#F0B429; --accent-deep:#332F63; --accent-tint:#FBF3DE; --card-bg:#EDBE55; }
+  html[data-theme="PRiS"]{ --accent:#D89A1E; --accent-deep:#2A2352; --accent-tint:#F5E6C4; --card-bg:#DFAE3E; }
+
+  *{ box-sizing: border-box; }
+  html{ scroll-behavior: smooth; }
+  body{
+    margin:0; background: var(--paper);
+    background-image: radial-gradient(circle at 1px 1px, rgba(43,42,40,0.05) 1px, transparent 0);
+    background-size: 22px 22px;
+    color: var(--ink); font-family: 'Karla', sans-serif; line-height: 1.5; padding-bottom: 80px;
+    transition: background-color .2s ease;
+  }
+  .wrap{ max-width: 880px; margin: 0 auto; padding: 0 20px; }
+
+  header.top{ padding: 48px 20px 28px; border-bottom: 1px solid var(--line); margin-bottom: 32px; }
+  header.top .eyebrow{
+    font-family:'IBM Plex Mono', monospace; font-size:12px; letter-spacing:.14em; text-transform:uppercase;
+    color: var(--accent-deep); margin:0 0 10px; transition: color .2s ease;
+  }
+  header.top h1{ font-family:'Libre Franklin', sans-serif; font-weight:600; font-size: clamp(28px,5vw,40px); margin:0 0 10px; letter-spacing:-0.01em; color: var(--accent-deep); transition: color .2s ease; }
+  header.top p{ color: var(--ink-soft); max-width: 52ch; margin:0; font-size:15.5px; }
+
+  /* Summary chips (ersetzen vorherige Schritte) */
+  .summary-bar{ display:flex; gap:10px; flex-wrap:wrap; margin-bottom: 28px; }
+  .summary-bar.hidden{ display:none; }
+  .chip{
+    display:inline-flex; align-items:center; gap:8px;
+    background: var(--accent-tint); border:1px solid var(--accent); color: var(--accent-deep);
+    padding: 7px 8px 7px 14px; border-radius: 999px; font-family:'IBM Plex Mono',monospace; font-size:12.5px;
+  }
+  .chip button{
+    background: var(--accent); color:white; border:none; border-radius:999px;
+    width:20px; height:20px; cursor:pointer; font-size:12px; line-height:1;
+  }
+
+  .hidden{ display:none !important; }
+
+  .step-label{ font-family:'IBM Plex Mono', monospace; font-size:12px; letter-spacing:.1em; text-transform:uppercase; color: var(--ink-soft); margin:0 0 12px; }
+  .choice-grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap:18px; margin-bottom: 36px; }
+  .choice-grid.triangle{ grid-template-columns: 1fr 1fr; }
+  .choice-grid.triangle .choice-card:nth-child(3){ grid-column: 1 / -1; width: calc((100% - 18px) / 2); margin: 0 auto; }
+  .choice-grid.twocol{ grid-template-columns: 1fr 1fr; }
+  .choice-grid.stufe-grid{ grid-template-columns: 1fr; }
+  .choice-card.stufe-card{ min-height: 110px; font-size: 21px; }
+  @media (max-width: 560px){
+    .choice-grid.triangle{ grid-template-columns: 1fr; }
+    .choice-grid.triangle .choice-card:nth-child(3){ max-width: 100%; }
+    .choice-grid.twocol{ grid-template-columns: 1fr; }
+  }
+  .choice-card{
+    background: var(--card-bg); border:2px solid white; border-radius: var(--radius); padding: 35px 28px; cursor:pointer;
+    text-align:center; font-family:'Libre Franklin', sans-serif; font-size: clamp(26px, 3.3vw, 32px); font-weight:600; min-height: 199px;
+    letter-spacing:-0.005em; color: var(--accent-deep);
+    display:flex; flex-direction:column; justify-content:center; align-items:center;
+    transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease; box-shadow: var(--shadow);
+  }
+  .choice-card:hover{ transform: translateY(-3px); border-color: var(--accent-deep); box-shadow: 0 4px 0 rgba(43,42,40,0.07), 0 16px 30px -16px rgba(43,42,40,0.38); }
+  .choice-card .sub{
+    display:block; margin-top:13px; font-family:'IBM Plex Mono', monospace; font-weight:500; font-size:13px;
+    letter-spacing:.08em; text-transform:uppercase; color: var(--accent-deep); opacity:.6;
+  }
+  .choice-card.klasse-card{ background: #7A76A8; color: white; border-color: white; min-height: 90px; padding: 20px 24px; font-size: 19px; font-weight:600; letter-spacing:normal; }
+  .choice-card.klasse-card .sub{ color: white; opacity:.7; }
+  .choice-card.klasse-card:hover{ border-color: var(--accent); }
+
+  .top-accordion{ border:1px solid var(--line); border-radius: var(--radius); margin-bottom:14px; overflow:hidden; background:white; box-shadow: var(--shadow); }
+  .top-accordion > button.head{
+    width:100%; text-align:left; background: var(--accent-tint); border:none; padding:18px 20px; cursor:pointer;
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+    font-family:'Libre Franklin', sans-serif; font-size:20px; font-weight:600; color: var(--ink);
+  }
+  .top-accordion > button.head .chev{ transition: transform .2s ease; color: var(--accent-deep); font-size:16px; }
+  .acc-label{ display:inline-flex; align-items:center; gap:10px; }
+  .acc-icon{ display:inline-flex; color: var(--accent-deep); }
+  .top-accordion.open > button.head .chev{ transform: rotate(90deg); }
+  .top-accordion .body{ display:none; padding:20px; }
+  .top-accordion.open .body{ display:block; }
+
+  .section-title{ font-family:'Libre Franklin', sans-serif; font-size:17px; font-weight:700; color: var(--ink); margin:0 0 14px; }
+  .mini-heading{ font-family:'Karla', sans-serif; font-size:12px; text-transform:uppercase; letter-spacing:.06em; color: var(--ink-soft); margin:16px 0 6px; }
+  .mat-group{ border-radius:10px; padding:10px 14px 12px; margin-bottom:10px; }
+  .mat-group h4{ margin-top:2px; }
+  .mat-group-material{ background:#F2F6EC; }
+  .mat-group-bring{ background:#FBF3E2; }
+  .mat-group .mat-list > .mat-item{ border-bottom-color: rgba(43,42,40,0.08); }
+  .einheit-tag{ font-family:'IBM Plex Mono', monospace; font-size:11px; color: var(--accent-deep); background: var(--accent-tint); padding:2px 7px; border-radius:999px; margin-left:6px; white-space:nowrap; }
+
+  .copyright-note{ border-left:2px solid var(--line); padding:2px 0 2px 14px; font-size:12.5px; line-height:1.5; color: var(--ink-soft); margin-bottom:16px; }
+  .copyright-note strong{ color: var(--ink-soft); font-weight:600; }
+  .klassen-hinweis{ background:#EFF3FA; border-left:3px solid var(--accent-deep); padding:8px 14px; font-size:13px; line-height:1.5; color: var(--ink-soft); margin-bottom:14px; border-radius:6px; }
+  .klassen-hinweis:empty{ display:none; }
+  .klassen-hinweis strong{ color: var(--ink); }
+  .unit-hinweis{ background:#EFF3FA; border-left:3px solid var(--accent-deep); padding:8px 14px; font-size:13px; line-height:1.5; color: var(--ink-soft); margin-bottom:14px; border-radius:6px; }
+  .unit-hinweis strong{ color: var(--ink); }
+  .zusatz-list{ list-style:none; margin:0; padding:0; }
+  .zusatz-list li{ font-size:13.5px; color: var(--ink); padding:8px 0; border-bottom:1px dashed var(--line); }
+  .zusatz-list li:last-child{ border-bottom:none; }
+  .zusatz-empty{ font-size:14px; color: var(--ink-soft); text-align:center; padding:10px 0; }
+  .zusatz-tbd{ font-size:13.5px; color: var(--ink-soft); margin:0; }
+  .teams-link{
+    display:inline-flex; align-items:center; gap:8px; background: var(--accent-deep); color:white; text-decoration:none;
+    padding:10px 16px; border-radius:999px; font-weight:600; font-size:14px;
+  }
+  .teams-link:hover{ filter: brightness(1.1); }
+
+  .box-visual{ display:flex; gap:18px; align-items:center; background: var(--accent-tint); border:1px dashed var(--line); border-radius:12px; padding:16px; margin-bottom:16px; }
+  .box-visual.has-photo{ flex-direction:column; align-items:stretch; border-style:solid; }
+  .box-visual.has-photo .cap{ text-align:center; margin-bottom:12px; }
+  .box-photo-row{ display:flex; gap:14px; align-items:start; }
+  .box-photo-row > *{ flex:1; min-width:0; }
+  .box-placeholder-square{ aspect-ratio:1/1; border:1.5px dashed var(--line); border-radius:10px; display:flex; align-items:center; justify-content:center; text-align:center; font-family:'IBM Plex Mono', monospace; font-size:12px; letter-spacing:.04em; color: var(--ink-soft); background: rgba(255,255,255,0.5); }
+  .box-photo-wrap img{ display:block; width:100%; border-radius:10px; box-shadow: var(--shadow); }
+  .refl-photo{ margin-bottom:6px; }
+  .refl-photo img{ display:block; width:100%; max-width:200px; margin:0 auto; border-radius:12px; box-shadow: var(--shadow); }
+  img.zoomable{ cursor: zoom-in; }
+  .photo-modal-bg{ position:fixed; inset:0; background: rgba(43,42,40,0.78); display:none; align-items:center; justify-content:center; padding:24px; z-index:60; cursor: zoom-out; }
+  .photo-modal-bg.show{ display:flex; }
+  .photo-modal-bg img{ max-width:92vw; max-height:88vh; border-radius:14px; box-shadow: 0 20px 50px -12px rgba(0,0,0,0.5); cursor:default; }
+  .photo-modal-close{ position:fixed; top:20px; right:24px; background: rgba(255,255,255,0.92); border:none; width:38px; height:38px; border-radius:50%; font-size:17px; cursor:pointer; color: var(--ink); }
+  .refl-photo-cap{ display:block; text-align:center; font-size:12.5px; color: var(--ink-soft); margin-top:8px; }
+  .box-visual .cap{ font-size:13px; color: var(--ink-soft); }
+  .box-visual .cap strong{ display:block; color: var(--ink); font-family:'Libre Franklin', sans-serif; font-size:16px; margin-bottom:4px; }
+
+  details.sublist{ border:1px solid var(--line); border-radius:10px; margin-bottom:12px; background:#FCFAF4; }
+  details.sublist > summary{ cursor:pointer; padding:12px 14px; font-weight:600; font-size:14.5px; list-style:none; display:flex; justify-content:space-between; align-items:center; }
+  details.sublist > summary::-webkit-details-marker{ display:none; }
+  details.sublist > summary::after{ content:'+'; color: var(--accent-deep); font-size:18px; }
+  details.sublist[open] > summary::after{ content:'–'; }
+  details.sublist .inner{ padding: 0 16px 14px; font-size:14px; color: var(--ink-soft); }
+  details.sublist ul{ margin:6px 0 0; padding-left:18px; }
+  details.sublist ul li{ margin-bottom:4px; }
+
+  .unit{ border:1px solid var(--line); border-radius:12px; margin-bottom:10px; overflow:hidden; background:white; }
+  .unit > summary{ list-style:none; cursor:pointer; padding:13px 16px; display:flex; align-items:center; justify-content:space-between; gap:10px; font-weight:600; font-size:15px; }
+  .unit > summary::-webkit-details-marker{ display:none; }
+  .unit .pageref{ font-family:'IBM Plex Mono', monospace; font-size:11.5px; color: var(--accent-deep); background: var(--accent-tint); padding:3px 8px; border-radius:999px; white-space:nowrap; }
+  .unit .inner{ padding: 4px 16px 16px; }
+  .unit h4{ font-family:'Karla',sans-serif; font-size:12px; text-transform:uppercase; letter-spacing:.06em; color: var(--ink-soft); margin:12px 0 6px; }
+  .obj-list{ display:flex; flex-wrap:wrap; gap:8px; }
+  .obj-chip{ display:inline-flex; align-items:center; gap:6px; background: var(--paper-2); border:1px solid var(--line); border-radius:999px; padding:6px 12px; font-size:13px; cursor:pointer; }
+  .obj-chip:hover{ border-color: var(--accent); }
+  .obj-chip .dot{ width:6px; height:6px; border-radius:50%; background: var(--accent); }
+  .roomlist{ font-size:13.5px; color: var(--ink-soft); }
+  .mat-list{ list-style:none; margin:0; padding:0; }
+  .mat-list > .mat-item{ font-size:13.5px; color: var(--ink); padding:6px 0; border-bottom:1px dashed var(--line); }
+  .mat-list > .mat-item:last-child{ border-bottom:none; }
+  .mat-item .mat-label{ font-weight:600; }
+  .mat-sub{ list-style:none; margin:6px 0 0; padding:0 0 0 18px; border-left:2px solid var(--line); }
+  .mat-sub li{ font-size:13px; color: var(--ink-soft); padding:3px 0 3px 10px; }
+  .mat-sub li.bring-sub{ background:#FBE9E9; border-radius:6px; padding:4px 10px; margin:2px 0; }
+  .mat-sub li.note-sub{ background:#FBE9E9; border-radius:6px; padding:4px 10px; margin:2px 0; }
+  .mat-list > .mat-item.note-bg{ background:#FBE9E9; border-radius:8px; padding:8px 12px; border-bottom:none; margin-bottom:4px; }
+  .mat-item.mat-item-photo{ display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
+  .mat-item.mat-item-photo .mat-text{ flex:1; min-width:0; }
+  .mat-thumb{ flex-shrink:0; margin-top:-4px; }
+  .mat-thumb img{ display:block; height:68px; width:auto; max-width:96px; border-radius:8px; box-shadow: var(--shadow); }
+  .mat-thumb-pending{ width:68px; height:68px; display:flex; align-items:center; justify-content:center; text-align:center; border:1.5px dashed var(--line); border-radius:8px; font-family:'IBM Plex Mono', monospace; font-size:10px; letter-spacing:.03em; line-height:1.3; color: var(--ink-soft); background: rgba(255,255,255,0.5); }
+  @media (max-width:420px){ .mat-thumb img{ height:56px; max-width:80px; } .mat-thumb-pending{ width:56px; height:56px; font-size:9px; } }
+  .bring-tag{
+    display:inline-block; font-family:'IBM Plex Mono', monospace; font-size:10.5px;
+    background: var(--accent-tint); color: var(--accent-deep); padding:2px 7px; border-radius:999px;
+    margin-left:4px; white-space:nowrap; vertical-align:middle;
+  }
+  .printed-tag{
+    display:inline-block; font-family:'IBM Plex Mono', monospace; font-size:10.5px;
+    background:#E4EEDA; color:#3E6B2E; padding:2px 7px; border-radius:999px;
+    margin-left:4px; white-space:nowrap; vertical-align:middle;
+  }
+  .note-tag{
+    display:inline-block; font-family:'IBM Plex Mono', monospace; font-size:10.5px;
+    background:#FBE9E9; color:#9B4444; padding:2px 7px; border-radius:999px;
+    margin-left:4px; white-space:nowrap; vertical-align:middle;
+  }
+  .mat-item.note-bg{ background:#FBE9E9; }
+  .mat-item.available-bg{ background:#E4EEDA; border-radius:8px; padding:8px 12px; border-bottom:none; margin-bottom:4px; }
+  .mat-link{ display:inline-block; font-size:12.5px; color: var(--accent-deep); text-decoration:underline; margin-top:3px; word-break:break-all; }
+  .roomlist li{ margin-bottom:3px; }
+
+  .unit.reflexion-unit > summary{ font-style: normal; }
+  .refl-item{ display:flex; gap:14px; padding:12px 0; border-bottom:1px solid var(--line); }
+  .refl-item:last-child{ border-bottom:none; }
+  .refl-item .pageref{ font-family:'IBM Plex Mono', monospace; font-size:11.5px; color: var(--accent-deep); background: var(--accent-tint); padding:3px 8px; border-radius:999px; height:fit-content; white-space:nowrap; }
+  .refl-item .txt strong{ display:block; font-family:'Libre Franklin', sans-serif; font-size:15.5px; margin-bottom:2px; }
+  .refl-item .txt span{ font-size:13.5px; color: var(--ink-soft); }
+
+  .modal-bg{ position:fixed; inset:0; background: rgba(43,42,40,0.55); display:none; align-items:center; justify-content:center; padding:24px; z-index:50; }
+  .modal-bg.show{ display:flex; }
+  .modal{ background:white; border-radius:16px; padding:24px; max-width:360px; width:100%; text-align:center; }
+  .modal h3{ font-family:'Libre Franklin', sans-serif; margin:0 0 6px; font-size:19px; }
+  .modal p{ font-size:13.5px; color: var(--ink-soft); margin:0 0 16px; }
+  .modal button{ background: var(--ink); color:white; border:none; padding:9px 18px; border-radius:999px; cursor:pointer; font-weight:600; font-size:13.5px; }
+
+  .placeholder-note{ font-family:'IBM Plex Mono', monospace; font-size:11px; color: var(--accent-deep); background: var(--accent-tint); display:inline-block; padding:2px 8px; border-radius:6px; margin-bottom:10px; }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <p class="eyebrow" id="eyebrow">StaFF · Materialkisten</p>
+    <h1>Was steckt in dieser Kiste?</h1>
+    <p>Materialübersicht zu den einzelnen Kisten und Einheiten</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="summary-bar hidden" id="summaryBar">
+    <span class="chip" id="chipLehrmittel"></span>
+    <span class="chip hidden" id="chipStufe"></span>
+    <span class="chip hidden" id="chipKlasse"></span>
+  </div>
+
+  <!-- SCHRITT 2: Stufe (nur PRiS) / Klasse -->
+  <div id="step-klasse" class="hidden">
+    <p class="step-label" id="stepLabel">Schritt 2 — Klasse</p>
+    <div class="choice-grid" id="klasse-grid"></div>
+  </div>
+
+  <!-- INHALT: Material + Kopiervorlagen -->
+  <div id="content" class="hidden">
+
+    <div class="top-accordion" id="acc-material">
+      <button class="head" onclick="toggleAcc('acc-material')">
+        <span class="acc-label"><span class="acc-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8L12 3 3 8l9 5 9-5Z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg></span> Material</span><span class="chev">›</span>
+      </button>
+      <div class="body">
+
+        <h3 class="section-title">Material</h3>
+
+        <span class="placeholder-note" id="boxPlaceholderNote">Platzhalterbild — durch Foto der gepackten Kiste ersetzen</span>
+        <div class="box-visual" id="boxVisual">
+          <div class="cap"><strong id="boxTitle">Materialkiste</strong>
+            So sieht die gepackte Kiste im Regal aus. Foto folgt.</div>
+        </div>
+
+        <details class="sublist">
+          <summary>Gesamte Materialliste dieser Kiste</summary>
+          <div class="inner">
+            <ul id="gesamtlisteList">
+              <li>Handpuppen Skippy und Flippy</li>
+              <li>Kärtchen «Gefühlebärchen»</li>
+              <li>1-Fach Dokumententaschen mit Druckknopf (für KVs)</li>
+              <li>Tischglocke</li>
+              <li>Plastilin, 250 g, 2 Farben</li>
+              <li>Bambus-Holzspiesse, 15 cm, 1 Packung</li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="unit reflexion-unit">
+          <summary><span class="acc-label"><span class="acc-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15.3-6.4L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15.3 6.4L3 16"/><path d="M3 21v-5h5"/></svg></span> Reflexions- und Moderationsobjekte</span> <span class="pageref">allgemein</span></summary>
+          <div class="inner">
+            <div class="refl-photo">
+              <img class="zoomable" src="bilder/reflexionsmaterial.jpg" alt="Reflexions-Keksdose, Wunschkerze und Säckchen mit Redestein">
+            </div>
+            <div id="reflexionsList"></div>
+          </div>
+        </details>
+
+      </div>
+    </div>
+
+    <div class="top-accordion" id="acc-einheiten">
+      <button class="head" onclick="toggleAcc('acc-einheiten')">
+        <span class="acc-label"><span class="acc-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><circle cx="4.5" cy="6" r="1.3" fill="currentColor" stroke="none"/><circle cx="4.5" cy="12" r="1.3" fill="currentColor" stroke="none"/><circle cx="4.5" cy="18" r="1.3" fill="currentColor" stroke="none"/></svg></span> Einheiten</span><span class="chev">›</span>
+      </button>
+      <div class="body">
+        <h3 class="section-title">Einheiten</h3>
+        <div id="klassenHinweis" class="klassen-hinweis"></div>
+        <div id="unitsList"></div>
+      </div>
+    </div>
+
+    <div class="top-accordion" id="acc-kv">
+      <button class="head" onclick="toggleAcc('acc-kv')">
+        <span class="acc-label"><span class="acc-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8Z"/><path d="M14 3v5h5"/><path d="M8 13h8M8 17h5"/></svg></span> Kopiervorlagen</span><span class="chev">›</span>
+      </button>
+      <div class="body">
+        <h3 class="section-title">Kopiervorlagen</h3>
+        <div id="kvListWrap" class="hidden">
+          <h4 class="mini-heading">In dieser Kiste enthalten</h4>
+          <ul class="mat-list" id="kvList"></ul>
+        </div>
+        <div class="copyright-note">
+          <strong>Urheberrechtlicher Hinweis:</strong> Aus urheberrechtlichen Gründen können die Kopiervorlagen
+          hier nicht digital bereitgestellt werden. Sie sind sowohl auf einem USB-Stick als auch als physische
+          Kopiervorlagen direkt in der Materialkiste vorhanden.
+        </div>
+      </div>
+    </div>
+
+    <div class="top-accordion" id="acc-zusatz">
+      <button class="head" onclick="toggleAcc('acc-zusatz')">
+        <span class="acc-label"><span class="acc-icon" id="zusatzAccIcon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span> <span id="zusatzAccLabel">Geschichten / Lieder / zusätzliche AB</span></span><span class="chev">›</span>
+      </button>
+      <div class="body">
+        <h3 class="section-title" id="zusatzSectionTitle">Geschichten / Lieder / zusätzliche AB</h3>
+        <div id="zusatzList"></div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<div class="modal-bg" id="modalBg" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <h3 id="modalTitle">Objekt</h3>
+    <p>Platzhalterbild — durch echtes Foto ersetzen, damit man das Objekt sofort erkennt.</p>
+    <button onclick="closeModal(event)">Schliessen</button>
+  </div>
+</div>
+
+<div class="photo-modal-bg" id="photoModalBg" onclick="closePhotoModal(event)">
+  <button class="photo-modal-close" onclick="closePhotoModal(event)">✕</button>
+  <img id="photoModalImg" src="" alt="">
+</div>
+
+<script>
+  // Gemeinsame Datenstrukturen. Gefüllt werden sie von den Dateien im Ordner "daten"
+  // (hier: daten/prik.js).
+  const klassen = {};
+  const unitsData = {};
+  const zusatzData = {};
+  const kistenFotos = {};
+  const klassenHinweise = {};
+  const reflexionsObjekteKlasse = {};
+  const EXTRA_KV = {};
+  const PAPIER_ITEMS = new Set();
+</script>
+<script src="daten/prik.js"></script>
+<script>
+  // klassen: siehe daten/*.js
+
+  // Einheiten je Klasse: nur Titel + Seitenzahl (aus dem Inhaltsverzeichnis).
+  // Material-/Schulzimmer-Angaben pro Einheit sind noch zu ergänzen.
+  // unitsData: siehe daten/*.js
+
+  // Geschichten / Lieder / zusätzliche AB je Klasse.
+  // - Klasse fehlt im Objekt  -> noch nicht erfasst ("noch zu ergänzen")
+  // - leeres Array []         -> bewusst leer (Klasse hat keine, Strich wird angezeigt)
+  // - Array mit Titeln        -> wird als Liste dargestellt. "einheit" (falls bekannt, aus der
+  //   "E<Zahl>_"-Dateibenennung) verknüpft den Eintrag mit der jeweiligen Einheit.
+  // zusatzData: siehe daten/*.js
+
+  // Foto der gepackten Materialkiste je Klasse (falls schon vorhanden).
+  // Fehlt ein Eintrag, bleibt der Platzhaltertext stehen.
+  // kistenFotos: siehe daten/*.js
+
+  function renderKistenFoto(lehrmittel, klasse){
+    const visual = document.getElementById('boxVisual');
+    const note = document.getElementById('boxPlaceholderNote');
+    const titel = 'Materialkiste — ' + klasse + ' (' + lehrmittel + ')';
+    let fotos = kistenFotos[lehrmittel] && kistenFotos[lehrmittel][klasse];
+    if(fotos && !Array.isArray(fotos)) fotos = [fotos];
+    if(fotos && fotos.length){
+      note.classList.add('hidden');
+      visual.classList.add('has-photo');
+      const slots = [fotos[0], fotos[1]].map(f => f
+        ? `<div class="box-photo-wrap"><img class="zoomable" src="bilder/${f}" alt="${titel}"></div>`
+        : `<div class="box-placeholder-square">Bild<br>folgt</div>`
+      ).join('');
+      visual.innerHTML = `<div class="cap"><strong>${titel}</strong></div>
+        <div class="box-photo-row">${slots}</div>`;
+    } else {
+      note.classList.remove('hidden');
+      visual.classList.remove('has-photo');
+      visual.innerHTML = `<div class="cap"><strong>${titel}</strong></div>`;
+    }
+  }
+
+  const zusatzIconNoten = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>';
+  const zusatzIconStift = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3l7 7-9 9H5v-7z"/><path d="M13 4l7 7"/></svg>';
+
+  function renderZusatz(lehrmittel, klasse){
+    const wrap = document.getElementById('zusatzList');
+    const list = zusatzData[lehrmittel] && zusatzData[lehrmittel][klasse];
+    const allAB = list && list.length && list.every(item => item.type === 'AB');
+    const heading = allAB ? 'Zusätzliche Arbeitsblätter' : 'Geschichten / Lieder / zusätzliche AB';
+    const accLabel = document.getElementById('zusatzAccLabel');
+    const sectionTitle = document.getElementById('zusatzSectionTitle');
+    const accIcon = document.getElementById('zusatzAccIcon');
+    if(accLabel) accLabel.textContent = heading;
+    if(sectionTitle) sectionTitle.textContent = heading;
+    if(accIcon) accIcon.innerHTML = allAB ? zusatzIconStift : zusatzIconNoten;
+    if(list === undefined){
+      wrap.innerHTML = '<p class="zusatz-tbd">Noch zu ergänzen.</p>';
+    } else if(list.length === 0){
+      wrap.innerHTML = '<p class="zusatz-empty">—</p>';
+    } else {
+      const renderZusatzItems = (items) => '<ul class="zusatz-list">' + items.map(item =>
+        `<li>${item.title}${item.einheit ? ' <span class="einheit-tag">Einheit '+item.einheit+'</span>' : ''}</li>`
+      ).join('') + '</ul>';
+      const geschichten = list.filter(item => item.type !== 'AB');
+      const abs = list.filter(item => item.type === 'AB');
+      let html = '';
+      if(geschichten.length){
+        html += (geschichten.length && abs.length ? '<h4>Geschichten</h4>' : '') + renderZusatzItems(geschichten);
+      }
+      if(abs.length){
+        html += (geschichten.length && abs.length ? '<h4>Zusätzliche Arbeitsblätter</h4>' : '') + renderZusatzItems(abs);
+      }
+      wrap.innerHTML = html;
+    }
+  }
+
+  // Allgemeiner Hinweis auf Klassenebene (z. B. Standardmaterial, das nicht
+  // bei jeder Einheit einzeln aufgeführt werden muss). Nur eintragen, wo nötig.
+  // klassenHinweise: siehe daten/*.js
+  function renderKlassenHinweis(lehrmittel, klasse){
+    const el = document.getElementById('klassenHinweis');
+    if(!el) return;
+    const hinweise = klassenHinweise[lehrmittel] && klassenHinweise[lehrmittel][klasse];
+    el.innerHTML = (hinweise && hinweise.length)
+      ? '<div><strong>Hinweis:</strong></div>' + hinweise.map(txt => `<div>${txt}</div>`).join('')
+      : '';
+  }
+
+  // Reflexions- und Moderationsobjekte: die Basis-Objekte gelten für alle Klassen,
+  // pro Klasse können zusätzliche, spezifische Objekte dazukommen.
+  const reflexionsObjekteBase = [
+    {title:'Säckchen mit Redestein', desc:'Nur wer den Stein hält, darf sprechen — für geordnete Gesprächs- und Feedbackrunden.'},
+    {title:'Reflexions-Keksdose', desc:'Hat oben einen grünen und unten einen roten Kreis. Die Dose wird herumgegeben, und die Kinder sprechen etwas Positives (grün) oder Negatives (rot) hinein.'},
+    {title:'Wunschkerze', desc:'Wer die Kerze hält, wünscht seinem Nachbarn/seiner Nachbarin etwas Schönes für den Tag.'},
+  ];
+  // reflexionsObjekteKlasse: siehe daten/*.js
+  function renderReflexionsobjekte(lehrmittel, klasse){
+    const wrap = document.getElementById('reflexionsList');
+    if(!wrap) return;
+    const extra = (reflexionsObjekteKlasse[lehrmittel] && reflexionsObjekteKlasse[lehrmittel][klasse]) || [];
+    const all = reflexionsObjekteBase.concat(extra);
+    wrap.innerHTML = all.map(o => `<div class="refl-item"><div class="txt"><strong>${o.title}</strong><span>${o.desc}</span></div></div>`).join('');
+  }
+
+  function renderUnits(lehrmittel, klasse){
+    const list = document.getElementById('unitsList');
+    list.innerHTML = '';
+    const units = (unitsData[lehrmittel] && unitsData[lehrmittel][klasse]) || null;
+    if(!units){
+      list.innerHTML = '<p style="color:var(--ink-soft); font-size:14px;">Einheiten für diese Klasse sind noch zu ergänzen.</p>';
+      return;
+    }
+    const zusatzList = zusatzData[lehrmittel] && zusatzData[lehrmittel][klasse];
+    units.forEach(u=>{
+      const d = document.createElement('details');
+      d.className = 'unit';
+      let bodyHtml;
+      if(u.noMaterial){
+        bodyHtml = '<p style="font-size:13.5px; color:var(--ink-soft); margin:0;">Kein Material notwendig</p>';
+      } else if(u.mat){
+        const {material, bring, kv} = splitMat(u.mat);
+        const materialHtml = material.length
+          ? '<div class="mat-group mat-group-material"><h4>Material Kiste</h4><ul class="mat-list">' + material.map(m => renderMatItem(m)).join('') + '</ul></div>'
+          : '';
+        const bringHtml = bring.length
+          ? '<div class="mat-group mat-group-bring"><h4>Selbst mitbringen</h4><ul class="mat-list">' + bring.map(m => `<li class="mat-item flat">${m.short || m.label}</li>`).join('') + '</ul></div>'
+          : '';
+        const kvHtml = kv.length
+          ? '<h4>Kopiervorlagen</h4><ul class="mat-list">' + kv.map(k => `<li class="mat-item flat">KV${k.num} — ${k.label}${k.alsoMaterial ? ` <span class="printed-tag">${k.printedNote || 'bereits als Karten vorhanden'}</span>` : ''}</li>`).join('') + '</ul>'
+          : '';
+        bodyHtml = (materialHtml + bringHtml + kvHtml) || '<p style="font-size:13.5px; color:var(--ink-soft); margin:0;">Kein Material notwendig</p>';
+      } else {
+        bodyHtml = '<h4>Material Kiste</h4><p style="font-size:13.5px; color:var(--ink-soft); margin:0;">Noch zu ergänzen.</p>';
+      }
+      // Einheitennummer aus dem Titel lesen (z. B. "3. Einheit: ...") und passende
+      // Geschichten/Lieder/zusätzliche AB dieser Einheit anhängen, falls vorhanden.
+      const numMatch = u.t.match(/^(\d+)\./);
+      const unitNum = numMatch ? Number(numMatch[1]) : null;
+      const matchingZusatz = (unitNum && zusatzList) ? zusatzList.filter(z => z.einheit === unitNum) : [];
+      const zusatzAlleAB = matchingZusatz.length && matchingZusatz.every(z => z.type === 'AB');
+      const zusatzHeading = zusatzAlleAB ? 'Zusätzliche Arbeitsblätter' : 'Geschichte / Lied / AB';
+      const zusatzHtml = matchingZusatz.length
+        ? `<h4>${zusatzHeading}</h4><ul class="mat-list">${matchingZusatz.map(z => `<li class="mat-item flat">${z.title}</li>`).join('')}</ul>`
+        : '';
+      const hinweisHtml = u.hinweis ? `<div class="unit-hinweis"><strong>Hinweis:</strong> ${u.hinweis}</div>` : '';
+      d.innerHTML = `<summary>${u.t}${u.p ? ' <span class="pageref">S. '+u.p+'</span>' : ''}</summary>
+        <div class="inner">
+          ${hinweisHtml}
+          ${bodyHtml}
+          ${zusatzHtml}
+        </div>`;
+      list.appendChild(d);
+    });
+  }
+
+  // Teilt die Materialliste einer Einheit in drei Gruppen: vorhandenes Material,
+  // selbst mitzubringendes Material und Kopiervorlagen (aus "(KVn)"-Kennzeichnung).
+  // Verschachtelte Objekte (mit .sub) bleiben als Ganzes im Material-Teil.
+  function splitMat(matArr){
+    const material = [], bring = [], kv = [];
+    matArr.forEach(m=>{
+      if(m.sub){ material.push(m); return; }
+      const label = m.short || m.label;
+      const kvMatch = label.match(/\(KV(\d+)\)/i);
+      if(kvMatch && !m.bring){
+        const num = kvMatch[1];
+        const base = label.replace(/\(KV\d+\)/i,'').replace(/pro Kind/i,'').trim();
+        kv.push({num, label: base, alsoMaterial: m.alsoMaterial, printedNote: m.printedNote});
+        if(m.alsoMaterial){ material.push({label: m.alsoMaterial, photo: m.photo, photoPending: m.photoPending}); }
+        return;
+      }
+      if(m.bring){ bring.push(m); return; }
+      material.push(m);
+    });
+    return {material, bring, kv};
+  }
+
+  function renderMatItem(m){
+    const bringTag = m.bring ? ' <span class="bring-tag">selbst mitbringen</span>' : '';
+    const noteTag = (m.note || m.mark) ? ` <span class="note-tag">${m.note || m.mark}</span>` : '';
+    const linkHtml = m.link ? `<br><a href="${m.link}" target="_blank" rel="noopener" class="mat-link">${m.link}</a>` : '';
+    const thumb = m.photo
+      ? `<div class="mat-thumb"><img class="zoomable" src="bilder/${m.photo}" alt="${m.label}"></div>`
+      : (m.photoPending ? `<div class="mat-thumb-pending">Bild<br>folgt</div>` : '');
+    const noteClass = m.available ? ' available-bg' : ((m.note || m.mark) ? ' note-bg' : '');
+    const hasVisual = m.photo || m.photoPending;
+    if(m.sub){
+      const subHtml = `<span class="mat-label">${m.label}${noteTag}</span>
+        <ul class="mat-sub">${m.sub.map(s => `<li${s.bring ? ' class="bring-sub"' : (s.note ? ' class="note-sub"' : '')}>${s.label}${s.bring ? ' <span class="bring-tag">selbst mitbringen</span>' : ''}${s.note ? ` <span class="note-tag">${s.note}</span>` : ''}</li>`).join('')}</ul>`;
+      if(hasVisual){
+        return `<li class="mat-item mat-item-photo${noteClass}"><div class="mat-text">${subHtml}</div>${thumb}</li>`;
+      }
+      return `<li class="mat-item${noteClass}">${subHtml}</li>`;
+    }
+    if(hasVisual){
+      return `<li class="mat-item mat-item-photo flat${noteClass}"><div class="mat-text">${m.label}${bringTag}${noteTag}${linkHtml}</div>${thumb}</li>`;
+    }
+    return `<li class="mat-item flat${noteClass}">${m.label}${bringTag}${noteTag}${linkHtml}</li>`;
+  }
+
+  // Baut die Gesamtliste der Kiste aus den Einheiten-Materialien: nur was tatsächlich
+  // IN der Kiste liegt (nicht "selbst mitbringen"), ohne Beispiele/Zusätze (die stehen
+  // bei der jeweiligen Einheit). Kopiervorlagen (KVn) werden separat gesammelt, inkl.
+  // der Einheit, aus der sie stammen (für die Kopiervorlagen-Übersicht).
+  // Papier-/Kärtchen-Material: kommt in der Gesamtliste ans Ende statt alphabetisch/nach Reihenfolge dazwischen.
+  // Papierige Sachen (Karten, Kärtchen, Ausdrucke), die in der Gesamtliste ans Ende kommen sollen:
+  [
+    // 'Name des Materials',
+  ].forEach(x => PAPIER_ITEMS.add(x));
+
+  // EXTRA_KV: siehe daten/*.js
+
+  function buildGesamtliste(lehrmittel, klasse){
+    const units = unitsData[lehrmittel] && unitsData[lehrmittel][klasse];
+    if(!units) return null;
+    const matSet = new Set();
+    const matSetLam = new Set();
+    const kvMap = new Map();
+    units.forEach(u=>{
+      if(!u.mat) return;
+      const numMatch = u.t.match(/^(\d+)\./);
+      const unitNum = numMatch ? Number(numMatch[1]) : null;
+      u.mat.forEach(m=>{
+        if(m.bring || m.note) return;
+        let label = m.short || m.label;
+        const kvMatch = label.match(/\(KV(\d+)\)/i);
+        if(kvMatch){
+          const num = kvMatch[1];
+          let base = label.replace(/\(KV\d+\)/i,'').replace(/pro Kind/i,'').trim();
+          if(!kvMap.has(num)) kvMap.set(num, {label: base, einheit: unitNum, alsoMaterial: m.alsoMaterial});
+          if(m.alsoMaterial){
+            if(PAPIER_ITEMS.has(m.alsoMaterial)) matSetLam.add(m.alsoMaterial); else matSet.add(m.alsoMaterial);
+          }
+          return;
+        }
+        let cleaned = label.replace(/\([^)]*\)/g,'').replace(/pro Kind/i,'').trim();
+        const isLam = PAPIER_ITEMS.has(cleaned) || PAPIER_ITEMS.has(label);
+        if(cleaned){
+          if(isLam) matSetLam.add(cleaned); else matSet.add(cleaned);
+        }
+      });
+    });
+    // Kopiervorlagen ohne feste Einheit ("individueller Einsatz")
+    const extraKv = (EXTRA_KV[lehrmittel] && EXTRA_KV[lehrmittel][klasse]) || [];
+    extraKv.forEach(k=>{ if(!kvMap.has(String(k.num))) kvMap.set(String(k.num), {label:k.label, tag:k.tag}); });
+    // Objekte zuerst, laminierte Sachen (Kärtchen, Karten usw.) am Schluss.
+    const matLines = Array.from(matSet).concat(
+      Array.from(matSetLam)
+    );
+    const kvLines = Array.from(kvMap.entries())
+      .sort((a,b) => Number(a[0]) - Number(b[0]))
+      .map(([num,info]) => `KV${num} — ${info.label}${info.einheit ? ' <span class="einheit-tag">Einheit '+info.einheit+'</span>' : (info.tag ? ' <span class="einheit-tag">'+info.tag+'</span>' : '')}`);
+    return { mat: matLines, kv: kvLines };
+  }
+
+
+  function renderGesamtliste(lehrmittel, klasse){
+    const ul = document.getElementById('gesamtlisteList');
+    const data = buildGesamtliste(lehrmittel, klasse);
+    if(!data) return; // kein Datensatz -> Platzhalterliste bleibt stehen
+    ul.innerHTML = data.mat.map(l => `<li>${l}</li>`).join('');
+  }
+
+  function renderKvList(lehrmittel, klasse){
+    const wrap = document.getElementById('kvListWrap');
+    const ul = document.getElementById('kvList');
+    const data = buildGesamtliste(lehrmittel, klasse);
+    if(data && data.kv.length){
+      ul.innerHTML = data.kv.map(l => `<li class="mat-item flat">${l}</li>`).join('');
+      wrap.classList.remove('hidden');
+    } else {
+      ul.innerHTML = '';
+      wrap.classList.add('hidden');
+    }
+  }
+
+  let selected = { lehrmittel: null, stufe: null, klasse: null };
+
+  function selectLehrmittel(name){
+    selected.lehrmittel = name;
+    selected.stufe = null;
+    selected.klasse = null;
+    document.documentElement.setAttribute('data-theme', name);
+    document.getElementById('eyebrow').textContent = 'StaFF · ' + name + ' — Materialkisten';
+
+    // Schritt 1 ausblenden, Chip zeigen
+    
+    document.getElementById('summaryBar').classList.remove('hidden');
+    document.getElementById('chipLehrmittel').innerHTML = name;
+    document.getElementById('chipStufe').classList.add('hidden');
+    document.getElementById('chipKlasse').classList.add('hidden');
+
+    renderStep2();
+    document.getElementById('step-klasse').classList.remove('hidden');
+    document.getElementById('content').classList.add('hidden');
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  // Baut Schritt 2 auf: bei PRiS zuerst die Stufenwahl (Primarstufe/Oberstufe),
+  // danach (oder bei den anderen Lehrmitteln direkt) die Klassenwahl.
+  function renderStep2(){
+    const grid = document.getElementById('klasse-grid');
+    const label = document.getElementById('stepLabel');
+    grid.innerHTML = '';
+    grid.classList.remove('twocol', 'stufe-grid');
+
+    label.textContent = 'Schritt 1 — Gruppe';
+    if(selected.lehrmittel === 'PRiGS' || selected.lehrmittel === 'PRiS') grid.classList.add('twocol');
+    const list = klassen[selected.lehrmittel];
+    list.forEach(k=>{
+      const btn = document.createElement('button');
+      btn.className = 'choice-card klasse-card';
+      btn.textContent = k;
+      btn.onclick = () => selectKlasse(k);
+      grid.appendChild(btn);
+    });
+  }
+
+  function selectKlasse(k){
+    selected.klasse = k;
+    document.getElementById('step-klasse').classList.add('hidden');
+    document.getElementById('chipKlasse').classList.remove('hidden');
+    document.getElementById('chipKlasse').innerHTML = k + ' <button onclick="backToKlasse()">↺</button>';
+    renderKistenFoto(selected.lehrmittel, k);
+    renderKlassenHinweis(selected.lehrmittel, k);
+    renderReflexionsobjekte(selected.lehrmittel, k);
+    renderUnits(selected.lehrmittel, k);
+    renderGesamtliste(selected.lehrmittel, k);
+    renderKvList(selected.lehrmittel, k);
+    renderZusatz(selected.lehrmittel, k);
+    document.getElementById('content').classList.remove('hidden');
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  function backToLehrmittel(){
+    selected = { lehrmittel:null, stufe:null, klasse:null };
+    document.documentElement.setAttribute('data-theme', 'default');
+    document.getElementById('eyebrow').textContent = 'StaFF · Materialkisten';
+    document.getElementById('summaryBar').classList.add('hidden');
+    document.getElementById('chipStufe').classList.add('hidden');
+    document.getElementById('chipKlasse').classList.add('hidden');
+    document.getElementById('step-klasse').classList.add('hidden');
+    document.getElementById('content').classList.add('hidden');
+    document.getElementById('step-lehrmittel').classList.remove('hidden');
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  function backToKlasse(){
+    selected.klasse = null;
+    document.getElementById('chipKlasse').classList.add('hidden');
+    document.getElementById('content').classList.add('hidden');
+    renderStep2();
+    document.getElementById('step-klasse').classList.remove('hidden');
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  function toggleAcc(id){ document.getElementById(id).classList.toggle('open'); }
+
+  function openModal(name){
+    document.getElementById('modalTitle').textContent = name;
+    document.getElementById('modalBg').classList.add('show');
+  }
+  function closeModal(e){ document.getElementById('modalBg').classList.remove('show'); }
+
+  // Fotos vergrössern: jedes Bild mit Klasse "zoomable" öffnet sich beim Klick
+  // in einer Lightbox (funktioniert auch für später dynamisch eingefügte Fotos).
+  function openPhotoModal(src, alt){
+    const img = document.getElementById('photoModalImg');
+    img.src = src;
+    img.alt = alt || '';
+    document.getElementById('photoModalBg').classList.add('show');
+  }
+  function closePhotoModal(e){
+    document.getElementById('photoModalBg').classList.remove('show');
+    document.getElementById('photoModalImg').src = '';
+  }
+  document.addEventListener('click', function(e){
+    const img = e.target.closest('img.zoomable');
+    if(img) openPhotoModal(img.src, img.alt);
+  });
+
+  // QR-Code-Einstieg: liest ?lehrmittel=PRiGS&klasse=2.%20Klasse aus der URL
+  // und springt direkt zur passenden Kiste. Alle Navigations-/Zurück-Buttons
+  // bleiben danach normal aktiv, damit man trotzdem andere Klassen ansehen kann.
+  (function initFromUrl(){
+    // Diese Seite zeigt nur den Kindergarten: Lehrmittel PRiK ist immer gewählt.
+    selectLehrmittel('PRiK');
+    const klasse = new URLSearchParams(window.location.search).get('klasse');
+    if(klasse && klassen.PRiK.includes(klasse)){ selectKlasse(klasse); }
+  })();
+</script>
+
+</body>
+</html>
